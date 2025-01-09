@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Dict, Optional, Union
 
 import bcrypt
 from jose import JWTError, jwt
 
-# 密钥配置
-SECRET_KEY = "your-secret-key"
+SECRET_KEY = "123"  # 从环境变量读取以增强安全性
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 过期时间
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # 密码加密
 def hash_password(password: str) -> str:
@@ -17,20 +16,21 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
+
 # 创建 JWT token
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+def create_access_token(data: Dict[str, Union[str, int]], expires_delta: Optional[timedelta] = None) -> str:
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode = data.copy()
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# 解析 JWT token
-def verify_token(token: str) -> dict:
+# 验证 JWT token
+def verify_token(token: str) -> Optional[Dict[str, Union[str, int]]]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if "sub" not in payload:
+            raise JWTError("Token payload missing 'sub'")
         return payload
-    except JWTError:
+    except JWTError as e:
+        print(f"Token verification failed: {e}")
         return None

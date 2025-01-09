@@ -49,5 +49,6 @@ class UserService:
         self.session.commit()
         return db_user
 
+
 def get_user_service(session: Session = Depends(get_db_session)):
     return UserService(session)

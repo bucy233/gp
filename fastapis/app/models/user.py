@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
@@ -24,10 +25,10 @@ class UserCreate(SQLModel):
 
 # 更新用户请求体
 class UserUpdate(SQLModel):
-    name: str | None = None
-    role: str | None = None
-    email: EmailStr | None = None
-    password: str | None = None
+    name: Optional[str] = None  # 使用 Optional 来表示可选字段
+    role: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
 
 # 用户登录请求体
 class UserLogin(SQLModel):
