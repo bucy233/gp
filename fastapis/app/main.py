@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 
-from app.core.db import init_db
-from app.routers.user import router as user_router
+from app.routers import company, user  # 引入company路由
 
 app = FastAPI()
 
-# 初始化数据库
-init_db()
 
-# 注册用户路由
-app.include_router(user_router, prefix="/api", tags=["users"])
+# 注册路由
+app.include_router(user.router, prefix="/api", tags=["users"])
+app.include_router(company.router, prefix="/api", tags=["companies"])
+
+
+#uvicorn app.main:app --reload

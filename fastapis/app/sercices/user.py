@@ -1,4 +1,5 @@
 from app.core.db import get_db_session
+from app.core.security import hash_password
 from app.models.user import User, UserCreate, UserUpdate
 from fastapi import Depends, HTTPException
 from sqlmodel import Session
@@ -21,6 +22,7 @@ class UserService:
         return self.session.query(User).filter(User.email == email).first()
 
     def create_user(self, user_to_create: UserCreate) -> User:
+        user_to_create.password = hash_password(user_to_create.password)  # 加密密码
         user = User.from_orm(user_to_create)
         self.session.add(user)
         self.session.commit()
@@ -36,7 +38,7 @@ class UserService:
         if user_update.email:
             db_user.email = user_update.email
         if user_update.password:
-            db_user.password = user_update.password
+            db_user.password = hash_password(user_update.password)  # 加密新密码
         self.session.commit()
         self.session.refresh(db_user)
         return db_user
@@ -47,6 +49,5 @@ class UserService:
         self.session.commit()
         return db_user
 
-# 获取服务实例
 def get_user_service(session: Session = Depends(get_db_session)):
     return UserService(session)
