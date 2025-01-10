@@ -8,7 +8,7 @@ from sqlmodel import Field, SQLModel
 # 用户模型
 class User(SQLModel, table=True):
     __tablename__ = "users"
-    
+
     user_id: int = Field(default=None, primary_key=True)
     name: str
     role: str
