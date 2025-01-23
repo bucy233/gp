@@ -13,3 +13,4 @@ class Company(SQLModel, table=True):
     contact: str | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow, sa_column_kwargs={"server_default": "CURRENT_TIMESTAMP"})
 
+                    
